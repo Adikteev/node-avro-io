@@ -16,18 +16,24 @@
     "test": "make test"
   },
   "dependencies": {
+    "bytebuffer": "^4.1.0",
     "lodash": "^2.4.1",
-    "snappy": "^2.1.1",
-    "buffer-crc32": "^0.2.5",
-    "int64-native": "0.3.2"
+    "long": "^2.3.0"
   },
   "devDependencies": {
+    "chai": "^3.3.0",
+    "karma": "^0.13.10",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-mocha": "^0.2.0",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-source-map-support": "^1.1.0",
+    "karma-sourcemap-loader": "^0.3.6",
+    "metascript": "~0",
     "mocha": "^2.1.0",
-    "should": "^4.4.2",
-    "jscoverage": "^0.5.9",
-    "buffertools": "^2.1.2",
-    "sprint": "^0.3.1",
-    "dtrace-provider": "^0.3.1"
+    "should": "^7.1.0",
+    "utfx": "^1.0.1"
   },
   "engines": {
     "node": ">= 0.10.x",

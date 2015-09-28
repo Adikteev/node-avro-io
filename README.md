@@ -55,3 +55,6 @@ TODO:
 
 - Avro RPC
 - Support for Trevni (column major data serialization)
+
+- pending: should allow for self references that are defined later
+

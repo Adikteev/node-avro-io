@@ -1,55 +1,47 @@
-var libpath = process.env['MOCHA_COV'] ? __dirname + '/../lib-cov/' : __dirname + '/../lib/';
-
-var _ = require('lodash');
-var should = require('should');
-
-var Avro = require(libpath + 'schema');
-
 describe('Schema()', function(){
     it('should create a new Schema object given arguments', function(){
-        var schema = Avro.Schema("string");
-        schema.should.be.an.instanceof(Avro.PrimitiveSchema);
-        schema.should.be.an.instanceof(Avro.Schema); // its baseclass
+        var schema = Schema.parse("string");
+        schema.should.be.an.instanceof(PrimitiveSchema);
+        schema.should.be.an.instanceof(Schema); // its baseclass
         schema.type.should.equal("string");
     });
     describe('parse()', function(){
         it('should throw an error if no arguments are provided', function(){
             (function() {
-                var schema = Avro.Schema();
-                schema.parse();
+                Schema.parse();
             }).should.throwError();
         });
         it('should return a PrimitiveSchema if any of the primitive types are passed as schema arguments or as a type property', function(){
             var primitives = ['null', 'boolean', 'int', 'long', 'float', 'double', 'bytes', 'string'];
             _.each(primitives, function(type) {
-                var schema = Avro.Schema(type);
-                schema.should.be.an.instanceof(Avro.PrimitiveSchema);
+                var schema = Schema.parse(type);
+                schema.should.be.an.instanceof(PrimitiveSchema);
                 schema.type.should.equal(type);
-                schema = Avro.Schema({ "type": type });
-                schema.should.be.an.instanceof(Avro.PrimitiveSchema);
+                schema = Schema.parse({ "type": type });
+                schema.should.be.an.instanceof(PrimitiveSchema);
                 schema.type.should.equal(type);
             });
         });
         it('should throw an error is an unrecognized primitive type is provided', function(){
             (function() {
-                Avro.Schema("unrecognized");
+                Schema.parse("unrecognized");
             }).should.throwError();
             (function() {
-                Avro.Schema({"type":"unrecognized"});
+                Schema.parse({"type":"unrecognized"});
             }).should.throwError();
         })
-        it('should return a UnionSchema if an array is passwd as a type', function(){
-            var schema = Avro.Schema([ "string", "int", "null"]);
-            schema.should.be.an.instanceof(Avro.UnionSchema);
+        it('should return a UnionSchema if an array is passed as a type', function(){
+            var schema = Schema.parse(["string", "int", "null"]);
+            schema.should.be.an.instanceof(UnionSchema);
             schema.type.should.equal("union");
         });
         it('should throw an error if an empty array of unions is passed', function(){
             (function() {
-                var schema = Avro.Schema([]);
+                var schema = Schema.parse([]);
             }).should.throwError();
         })
         it('should return a RecordSchema if an object is passed with a type "record"', function(){
-            var schema = Avro.Schema({
+            var schema = Schema.parse({
                 name: "myrecord",
                 type: "record",
                 fields: [
@@ -70,57 +62,57 @@ describe('Schema()', function(){
                     },
                 ]
             });
-            schema.should.be.an.instanceof(Avro.RecordSchema);
+            schema.should.be.an.instanceof(RecordSchema);
             schema.type.should.equal("record");
             schema.fields.should.be.an.instanceof(Object);
             _.size(schema.fields).should.equal(3);
         });
         it('should return a MapSchema if an object is passed with a type "map"', function(){
-            var schema = Avro.Schema({
+            var schema = Schema.parse({
                 "name": "mapSchemaTest",
                 "type": {
                     "type": "map",
                     "values": "bytes"
                 }
             });
-            schema.should.be.an.instanceof(Avro.MapSchema);
-            schema.values.should.be.an.instanceof(Avro.PrimitiveSchema);
+            schema.should.be.an.instanceof(MapSchema);
+            schema.values.should.be.an.instanceof(PrimitiveSchema);
             schema.values.type.should.equal("bytes");
             schema.type.should.equal("map");
         });
         it('should return an ArraySchema is an object is passed with a type "array"', function(){
-            var schema = Avro.Schema({
+            var schema = Schema.parse({
                 "name": "arraySchemaTest",
                 "type": "array",
                 "items": "long"
             });
-            schema.should.be.an.instanceof(Avro.ArraySchema);
-            schema.items.should.be.an.instanceof(Avro.PrimitiveSchema);
+            schema.should.be.an.instanceof(ArraySchema);
+            schema.items.should.be.an.instanceof(PrimitiveSchema);
             schema.type.should.equal("array");
         });
         it('should return a FixedSchema if an object is passed with a type "fixed"', function(){
-            var schema = Avro.Schema({
+            var schema = Schema.parse({
                 "name": "fixedSchemaTest",
                 "type": {
                     "type": "fixed",
                     "size": 50
                 }
             });
-            schema.should.be.an.instanceof(Avro.FixedSchema);
+            schema.should.be.an.instanceof(FixedSchema);
             schema.size.should.equal(50);
             schema.type.should.equal("fixed");
         });
         it('should return a EnumSchema if an object is passed with a type "enum"', function(){
-            var schema = Avro.Schema({
+            var schema = Schema.parse({
                 "type": "enum",
                 "symbols": [ "Alpha", "Bravo", "Charlie", "Delta"]
             });
-            schema.should.be.an.instanceof(Avro.EnumSchema);
+            schema.should.be.an.instanceof(EnumSchema);
             schema.symbols.should.have.length(4);
             schema.type.should.equal("enum");
         })
         it('should allow for self references by name for non-primitive data types', function() {
-            var schema = Avro.Schema({
+            var schema = Schema.parse({
                 "name": "document",
                 "type": [
                     {
@@ -165,7 +157,7 @@ describe('Schema()', function(){
         // Document not initially fail. It would wait until it has reached a
         // definition for Document or fail when it reaches the end of the schema
         it.skip('should allow for self references that are defined later', function() {
-            var schema = Avro.Schema({
+            var schema = Schema.parse({
                 "name": "document",
                 "type": [
                     {
